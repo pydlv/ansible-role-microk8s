@@ -7,4 +7,5 @@
       vars:
         microk8s_users:
           - ckaserer
+        skip_handlers: true
 ...

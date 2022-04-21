@@ -4,4 +4,6 @@
   become: true
   roles:
     - role: gepaplexx.microk8s
+      vars:
+        skip_handlers: true
 ...

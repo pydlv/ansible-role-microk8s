@@ -14,29 +14,29 @@
     - microk8s.ha
     - microk8s.ha.hosts
 
+- name: Waiting for microk8s to be ready on microk8s host master
+  ansible.builtin.command:
+    cmd: microk8s status --wait-ready
+  when: is_master is defined and ( is_master | bool)
+  changed_when: false
+
+- name: Get the microk8s join command from the microk8s master
+  ansible.builtin.shell:
+    cmd: >-
+      microk8s add-node |
+      grep -E -m1 'microk8s join {{ microk8s_ip_regex_ha }}'
+  when: is_master is defined and ( is_master | bool)
+  changed_when: false
+  register: microk8s_join_command
+
+- name: Get microk8s cluster nodes
+  ansible.builtin.command:
+    cmd: kubectl get nodes --no-headers -o custom-columns=:.metadata.name
+  when: is_master is defined and ( is_master | bool)
+  changed_when: false
+  register: microk8s_cluster_node
+
 - block:
-    - name: Waiting for microk8s to be ready on microk8s host master
-      ansible.builtin.command:
-        cmd: microk8s status --wait-ready
-      when: is_master is defined and ( is_master | bool)
-      changed_when: false
-
-    - name: Get the microk8s join command from the microk8s master
-      ansible.builtin.shell:
-        cmd: >-
-          microk8s add-node |
-          grep -E -m1 'microk8s join {{ microk8s_ip_regex_ha }}'
-      when: is_master is defined and ( is_master | bool)
-      changed_when: false
-      register: microk8s_join_command
-
-    - name: Get microk8s cluster nodes
-      ansible.builtin.command:
-        cmd: kubectl get nodes --no-headers -o custom-columns=:.metadata.name
-      when: is_master is defined and ( is_master | bool)
-      changed_when: false
-      register: microk8s_cluster_node
-
     - name: Waiting for microk8s to be ready on microk8s host node
       ansible.builtin.command:
         cmd: microk8s status --wait-ready
@@ -44,9 +44,9 @@
 
     - name: Set the microk8s join command on the microk8s node
       ansible.builtin.command:
-        cmd: "{{ microk8s_join_command.stdout }} --skip-verify"
+        cmd: "{{ hostvars[groups['infra_master'][0]]['microk8s_join_command'].stdout }} --skip-verify" # yamllint disable-line
       when:
-        - inventory_hostname not in microk8s_cluster_node.stdout
+        - inventory_hostname not in hostvars[groups['infra_master'][0]]['microk8s_cluster_node'].stdout # yamllint disable-line
 
   when: is_master is not defined or not ( is_master | bool)
   tags:
