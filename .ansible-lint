@@ -34,8 +34,8 @@ var_naming_pattern: "^[_]*microk8s_[a-z][a-z0-9_]*$"
 use_default_rules: true
 
 # This makes linter to fully ignore rules/tags listed below
-# skip_list:
-#  - skip_this_tag
+skip_list:
+  - no-handler
 #  - git-latest
 
 # Any rule that has the 'opt-in' tag will not be loaded unless its 'id' is
