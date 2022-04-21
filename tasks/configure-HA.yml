@@ -44,9 +44,9 @@
 
     - name: Set the microk8s join command on the microk8s node
       ansible.builtin.command:
-        cmd: "{{ hostvars[groups['infra_master'][0]]['microk8s_join_command'].stdout }} --skip-verify"
+        cmd: "{{ hostvars[groups['infra_master'][0]]['microk8s_join_command'].stdout }} --skip-verify" # yamllint disable-line
       when:
-        - inventory_hostname not in hostvars[groups['infra_master'][0]]['microk8s_cluster_node'].stdout
+        - inventory_hostname not in hostvars[groups['infra_master'][0]]['microk8s_cluster_node'].stdout # yamllint disable-line
 
   when: is_master is not defined or not ( is_master | bool)
   tags:
