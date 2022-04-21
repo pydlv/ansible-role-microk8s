@@ -37,7 +37,6 @@
     loop_var: microk8s_cgroup_opt
     label: "{{ microk8s_cgroup_opt }}"
   register: microk8s_update_boot_config
-  notify: Reboot System
   when:
     - microk8s_boot_config.stat.exists
     - microk8s_cgroup_opt not in
@@ -47,6 +46,20 @@
     - microk8s.dependencies
     - microk8s.dependencies.cgroups
 
+- name: notify handler
+  ansible.builtin.debug:
+    msg: "{{ microk8s_update_boot_config.changed }}"
+  notify: Reboot System
+  when:
+    - microk8s_update_boot_config.changed
+  tags:
+    - microk8s
+    - notest
+    - microk8s.dependencies
+    - microk8s.dependencies.cgroups
+
 - name: Flush Handlers
   ansible.builtin.meta: flush_handlers
+  tags:
+    - notest
 ...

@@ -22,6 +22,7 @@
   tags:
     - microk8s
     - microk8s.users
+    - notest
 
 - name: configure High Availability
   ansible.builtin.include_tasks:
