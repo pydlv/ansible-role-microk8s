@@ -33,7 +33,7 @@
       microk8s add-node |
       grep -E -m1 'microk8s join {{ microk8s_ip_regex_ha }}'
   with_items: "{{ groups['infra_cluster'] | difference(groups['infra_master']) }}"
-  when: is_master is defined and ( is_master | bool) and inventory_hostname not in hostvars[groups['infra_master'][0]]['microk8s_cluster_node'].stdout
+  when: is_master is defined and ( is_master | bool) and inventory_hostname not in hostvars[groups['infra_master'][0]]['microk8s_cluster_node'].stdout # yamllint disable-line
   changed_when: false
   register: microk8s_join_command
 
@@ -47,7 +47,7 @@
       ansible.builtin.command:
         cmd: "{{ item.stdout }} --skip-verify"
       with_items: "{{ hostvars[groups['infra_master'][0]]['microk8s_join_command'].results}}"
-      when: inventory_hostname in item.item and inventory_hostname not in hostvars[groups['infra_master'][0]]['microk8s_cluster_node'].stdout
+      when: inventory_hostname in item.item and inventory_hostname not in hostvars[groups['infra_master'][0]]['microk8s_cluster_node'].stdout # yamllint disable-line
 
   when: is_master is not defined or not ( is_master | bool)
   tags:
