@@ -20,21 +20,22 @@
   when: is_master is defined and ( is_master | bool)
   changed_when: false
 
-- name: Get the microk8s join command from the microk8s master
-  ansible.builtin.shell:
-    cmd: >-
-      microk8s add-node |
-      grep -E -m1 'microk8s join {{ microk8s_ip_regex_ha }}'
-  when: is_master is defined and ( is_master | bool)
-  changed_when: false
-  register: microk8s_join_command
-
 - name: Get microk8s cluster nodes
   ansible.builtin.command:
     cmd: kubectl get nodes --no-headers -o custom-columns=:.metadata.name
   when: is_master is defined and ( is_master | bool)
   changed_when: false
   register: microk8s_cluster_node
+
+- name: Get the microk8s join command from the microk8s master
+  ansible.builtin.shell:
+    cmd: >-
+      microk8s add-node |
+      grep -E -m1 'microk8s join {{ microk8s_ip_regex_ha }}'
+  with_items: "{{ groups['infra_cluster'] | difference(groups['infra_master']) }}"
+  when: is_master is defined and ( is_master | bool) and inventory_hostname not in hostvars[groups['infra_master'][0]]['microk8s_cluster_node'].stdout
+  changed_when: false
+  register: microk8s_join_command
 
 - block:
     - name: Waiting for microk8s to be ready on microk8s host node
@@ -44,9 +45,9 @@
 
     - name: Set the microk8s join command on the microk8s node
       ansible.builtin.command:
-        cmd: "{{ hostvars[groups['infra_master'][0]]['microk8s_join_command'].stdout }} --skip-verify" # yamllint disable-line
-      when:
-        - inventory_hostname not in hostvars[groups['infra_master'][0]]['microk8s_cluster_node'].stdout # yamllint disable-line
+        cmd: "{{ item.stdout }} --skip-verify"
+      with_items: "{{ hostvars[groups['infra_master'][0]]['microk8s_join_command'].results}}"
+      when: inventory_hostname in item.item and inventory_hostname not in hostvars[groups['infra_master'][0]]['microk8s_cluster_node'].stdout
 
   when: is_master is not defined or not ( is_master | bool)
   tags:
