@@ -14,7 +14,8 @@
     - microk8s.ha
     - microk8s.ha.hosts
 
-- set_fact:
+- name: Set master var on all hosts
+  set_fact:
     microk8s_master: "{{ inventory_hostname }}"
   delegate_to: "{{ microk8s_hosts }}"
   delegate_facts: true
