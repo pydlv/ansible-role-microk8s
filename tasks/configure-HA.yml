@@ -14,10 +14,12 @@
     - microk8s.ha
     - microk8s.ha.hosts
 
-- name: Select master node
-  set_fact:
+- set_fact:
     master: "{{ inventory_hostname }}"
-  run_once: true
+  delegate_to: "{{ item }}"
+  delegate_facts: true
+  with_items: "{{ ansible_play_hosts }}"
+  when: is_master is defined and (is_master | bool)
 
 - name: Waiting for microk8s to be ready on microk8s host master
   ansible.builtin.command:
