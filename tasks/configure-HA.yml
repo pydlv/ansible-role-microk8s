@@ -57,7 +57,7 @@
     - name: Set the microk8s join command on the microk8s node
       ansible.builtin.command:
         cmd: "{{ microk8s_join_cmd.stdout }} --skip-verify"
-      with_items: "{{ hostvars[microk8s_master]['microk8s_join_command'].results }}"
+      with_items: "{{ hostvars[microk8s_master]['microk8s_join_command'].results }}" # yamllint disable-line
       loop_control:
         loop_var: microk8s_join_cmd
       when: inventory_hostname in microk8s_join_cmd.microk8s_join_cmd and inventory_hostname not in hostvars[microk8s_master]['microk8s_cluster_node'].stdout # yamllint disable-line
