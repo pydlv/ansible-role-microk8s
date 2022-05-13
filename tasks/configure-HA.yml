@@ -16,9 +16,11 @@
 
 - set_fact:
     microk8s_master: "{{ inventory_hostname }}"
-  delegate_to: "{{ item }}"
+  delegate_to: "{{ microk8s_hosts }}"
   delegate_facts: true
   with_items: "{{ ansible_play_hosts }}"
+  loop_control:
+    loop_var: microk8s_hosts
   when: is_master is defined and (is_master | bool)
 
 - name: Waiting for microk8s to be ready on microk8s host master
