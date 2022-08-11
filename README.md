@@ -40,6 +40,24 @@ defined in `[defaults/main.yml](defaults/main.yml)`.
           ingress: true
 ```
 
+### High Availability clusters
+
+Setting up a High Availability cluster is very simple with MicroK8s.
+
+* Set `microk8s_enable_ha` to `true`
+* Set one of the nodes as the master node (The nodes all others will join to)
+
+Example inventory:
+```ini
+[infra_master]
+gp-central-awx0 ansible_host=a.b.c.d ansible_user=ansible is_master=true
+```
+
+### Character encoding
+
+On some system the default character set is ASCII which breaks MicroK8s a bit. The solution to this is to set the
+encoding to UTF-8: `export LC_ALL=C.UTF-8`
+
 ## License
 
 MIT
