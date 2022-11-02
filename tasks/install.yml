@@ -33,6 +33,7 @@
   community.general.snap:
     name: microk8s
     classic: true
+    channel: "{{ microk8s_channel }}"
   notify: microk8s ready
   tags:
     - microk8s
