@@ -14,9 +14,8 @@
     - microk8s
     
 - name: Reset Microk8s
-  tasks:
-    - name: Reset Microk8s
-      command: microk8s reset
+  ansible.builtin.import_tasks:
+    file: reset.yml
   tags:
     - always
     - microk8s

@@ -1,0 +1,7 @@
+---
+- name: Reset microk8s
+  ansible.builtin.command:
+    cmd: microk8s reset
+  tags:
+    - microk8s
+    - microk8s.reset
