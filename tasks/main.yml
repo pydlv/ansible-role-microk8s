@@ -14,11 +14,12 @@
     - microk8s
     
 - name: Reset Microk8s
-  hosts: all
-  become: true
-  tasks: 
+  tasks:
     - name: Reset Microk8s
       command: microk8s reset
+  tags:
+    - always
+    - microk8s
 
 - name: Configure microk8s Users
   ansible.builtin.include_tasks:
